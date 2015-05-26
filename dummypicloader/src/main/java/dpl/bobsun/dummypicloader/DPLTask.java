@@ -2,7 +2,9 @@ package dpl.bobsun.dummypicloader;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
@@ -13,9 +15,11 @@ import java.lang.ref.WeakReference;
 public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
 
     private WeakReference<ImageView> imageViewWeakReference;
+    BitmapFactory.Options options;
 
     public DPLTask(ImageView imageView){
         imageViewWeakReference = new WeakReference(imageView);
+        options = new BitmapFactory.Options();
     }
 
     @Override
@@ -25,7 +29,7 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(String... strings) {
-        return BitmapFactory.decodeFile(strings[0]);
+        return BitmapFactory.decodeFile(strings[0], options);
     }
 
     @Override
@@ -35,8 +39,47 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
 
     @Override
     protected void onPostExecute(Bitmap result){
-        if (imageViewWeakReference.get() != null)
-            imageViewWeakReference.get().setImageBitmap(result);
+        if (isCancelled()){
+            result = null;
+            return;
+        }
+        if (imageViewWeakReference != null) {
+            final ImageView imageView = imageViewWeakReference.get();
+            final DPLTask dplTask =
+                    getBitmapWorkerTask(imageView);
+            if (this == dplTask && imageView != null) {
+                imageView.setImageBitmap(result);
+            }
+        }
+
     }
 
+    private static DPLTask getBitmapWorkerTask(ImageView imageView) {
+        if (imageView != null) {
+            final Drawable drawable = imageView.getDrawable();
+            if (drawable instanceof DPLDrawable) {
+                final DPLDrawable asyncDrawable = (DPLDrawable) drawable;
+                return asyncDrawable.getTask();
+            }
+        }
+        return null;
+    }
+
+    public void setOptions(BitmapFactory.Options options,String fileName){
+        if (options.outWidth !=0 && options.outHeight !=0){
+            BitmapFactory.Options fakeOption = new BitmapFactory.Options();
+            fakeOption.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(fileName,fakeOption);
+            if ( fakeOption.outWidth / options.outWidth > fakeOption.outHeight / options.outHeight){
+                options.inSampleSize =fakeOption.outWidth / options.outWidth;
+                options.inScaled = true;
+            }
+            if ( fakeOption.outWidth / fakeOption.outWidth < fakeOption.outHeight / options.outHeight) {
+                options.inSampleSize = fakeOption.outHeight / options.outHeight;
+                options.inScaled = true;
+            }
+        }
+
+        this.options = options;
+    }
 }

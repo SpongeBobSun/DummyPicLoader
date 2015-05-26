@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference;
 public class DPLDrawable extends BitmapDrawable {
     private WeakReference DPLTaskRef;
     public DPLDrawable(Resources res, String fileName,DPLTask task){
-        super(res,fileName);
+//        super(res,fileName);
         DPLTaskRef = new WeakReference(task);
     }
     public DPLTask getTask(){
