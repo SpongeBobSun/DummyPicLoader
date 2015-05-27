@@ -19,7 +19,6 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
 
     public DPLTask(ImageView imageView){
         imageViewWeakReference = new WeakReference(imageView);
-        options = new BitmapFactory.Options();
     }
 
     @Override
@@ -79,7 +78,8 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
                 options.inScaled = true;
             }
         }
-
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
         this.options = options;
     }
+
 }

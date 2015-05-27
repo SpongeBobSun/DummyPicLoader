@@ -2,7 +2,6 @@ package dpl.bobsun.dummypicloadertest;
 
 import android.content.Context;
 import android.os.Environment;
-import android.os.storage.StorageManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -16,9 +15,6 @@ import android.widget.ImageView;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 import dpl.bobsun.dummypicloader.DummyPicLoader;
 
@@ -31,15 +27,6 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         GridView gridView = (GridView) findViewById(R.id.id_grid_view);
         ArrayList pics = new ArrayList();
-//        pics.addAll(Arrays.asList(
-//                Environment.getExternalStorageDirectory().list(new FilenameFilter() {
-//                    @Override
-//                    public boolean accept(File file, String s) {
-//                        if (s.endsWith(".jpg") || s.endsWith(".png") || s.endsWith(".bmp"))
-//                            return true;
-//                        return false;
-//                    }
-//                })));
         File[] files = Environment.getExternalStorageDirectory().listFiles(new FilenameFilter() {
                     @Override
                     public boolean accept(File file, String s) {
@@ -85,9 +72,17 @@ public class MainActivity extends ActionBarActivity {
         }
 
         @Override
+        public int getCount(){
+            return list.size();
+        }
+
+        @Override
         public View getView(int position, View convertView, ViewGroup parent){
-            ImageView ret = new ImageView(getContext());
-            DummyPicLoader.getInstance(getContext()).resize(300,300).loadImage((String) list.get(position),ret,R.drawable.abc_ic_menu_paste_mtrl_am_alpha);
+            ImageView ret = (ImageView) convertView;
+            if (ret == null) {
+               ret =  new ImageView(getContext());
+            }
+            DummyPicLoader.getInstance(getContext()).setDefaultImage(R.drawable.abc_ic_voice_search_api_mtrl_alpha).resize(300,300).loadImageFromFile((String) list.get(position), ret, R.drawable.abc_ic_menu_paste_mtrl_am_alpha);
             return ret;
         }
     }
