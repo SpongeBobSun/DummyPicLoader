@@ -12,7 +12,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * Created by bobsun on 15-5-26.
@@ -21,9 +26,16 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
 
     private WeakReference<ImageView> imageViewWeakReference;
     BitmapFactory.Options options;
+    int type;
 
-    public DPLTask(ImageView imageView){
+    public static final int TASK_TYPE_FILE = 1;
+    public static final int TASK_TYPE_URL = 2;
+    public static final int TASK_TYPE_RES = 3;
+
+
+    public DPLTask(ImageView imageView,int type){
         imageViewWeakReference = new WeakReference(imageView);
+        this.type = type;
     }
 
     @Override
@@ -33,18 +45,67 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(String... strings) {
-        FileInputStream fileInputStream;
-        try {
-            fileInputStream = new FileInputStream(strings[0]);
-            fileInputStream.getFD();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return Bitmap.createBitmap(300,300,null);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return Bitmap.createBitmap(300,300,null);
+
+        InputStream inputStream = null;
+
+        if (this.type == TASK_TYPE_FILE) {
+
+            if (options.outWidth !=0 && options.outHeight !=0){
+                BitmapFactory.Options fakeOption = new BitmapFactory.Options();
+                fakeOption.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(strings[0],fakeOption);
+                if ( fakeOption.outWidth / options.outWidth > fakeOption.outHeight / options.outHeight){
+                    options.inSampleSize =fakeOption.outWidth / options.outWidth;
+                    options.inScaled = true;
+                }
+                if ( fakeOption.outWidth / fakeOption.outWidth < fakeOption.outHeight / options.outHeight) {
+                    options.inSampleSize = fakeOption.outHeight / options.outHeight;
+                    options.inScaled = true;
+                }
+            }
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
+
+            try {
+                inputStream = new FileInputStream(strings[0]);
+                ((FileInputStream)inputStream).getFD();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return Bitmap.createBitmap(300, 300, null);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return Bitmap.createBitmap(300, 300, null);
+            }
         }
-        return BitmapFactory.decodeStream(fileInputStream,new Rect(0,0,options.outWidth,options.outHeight),options);
+        if (this.type == TASK_TYPE_URL){
+            try {
+                URL url = new URL(strings[0]);
+                URLConnection urlConnection = url.openConnection();
+                urlConnection.connect();
+                urlConnection.getHeaderFields();
+                inputStream = urlConnection.getInputStream();
+
+                if (options.outWidth !=0 && options.outHeight !=0) {
+                    BitmapFactory.Options fakeOption = new BitmapFactory.Options();
+                    fakeOption.inJustDecodeBounds = true;
+                    BitmapFactory.decodeStream(urlConnection.getInputStream(),new Rect(),fakeOption);
+                    if (fakeOption.outWidth / options.outWidth > fakeOption.outHeight / options.outHeight) {
+                        options.inSampleSize = fakeOption.outWidth / options.outWidth;
+                        options.inScaled = true;
+                    }
+                    if (fakeOption.outWidth / fakeOption.outWidth < fakeOption.outHeight / options.outHeight) {
+                        options.inSampleSize = fakeOption.outHeight / options.outHeight;
+                        options.inScaled = true;
+                    }
+                    inputStream = urlConnection.getInputStream();
+                }
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return BitmapFactory.decodeStream(inputStream,new Rect(0,0,options.outWidth,options.outHeight),options);
     }
 
     @Override
@@ -58,13 +119,11 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
             result = null;
             return;
         }
-        if (imageViewWeakReference != null) {
-            final ImageView imageView = imageViewWeakReference.get();
-            final DPLTask dplTask =
-                    getBitmapWorkerTask(imageView);
-            if (this == dplTask && imageView != null) {
-                imageView.setImageBitmap(result);
-            }
+        final ImageView imageView = imageViewWeakReference.get();
+        final DPLTask dplTask =
+                getBitmapWorkerTask(imageView);
+        if (this == dplTask && imageView != null) {
+            imageView.setImageBitmap(result);
         }
 
     }
@@ -80,22 +139,7 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
         return null;
     }
 
-    public void setOptions(BitmapFactory.Options options,String fileName){
-        if (options.outWidth !=0 && options.outHeight !=0){
-            BitmapFactory.Options fakeOption = new BitmapFactory.Options();
-            fakeOption.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(fileName,fakeOption);
-            if ( fakeOption.outWidth / options.outWidth > fakeOption.outHeight / options.outHeight){
-                options.inSampleSize =fakeOption.outWidth / options.outWidth;
-                options.inScaled = true;
-            }
-            if ( fakeOption.outWidth / fakeOption.outWidth < fakeOption.outHeight / options.outHeight) {
-                options.inSampleSize = fakeOption.outHeight / options.outHeight;
-                options.inScaled = true;
-            }
-        }
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
+    public void setOptions(BitmapFactory.Options options){
         this.options = options;
     }
-
 }

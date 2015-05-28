@@ -6,7 +6,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
+import java.io.IOException;
 import java.lang.ref.SoftReference;
+import java.net.URL;
 
 /**
  * Created by bobsun on 15-5-26.
@@ -31,15 +33,14 @@ public class DummyPicLoader {
         return new DummyPicLoader(context);
     }
 
-    public DummyPicLoader loadImageFromFile(String fileName,
-                                            ImageView imageView,
-                                            int resId){
+    public void loadImageFromFile(String fileName,
+                                            ImageView imageView){
         bmpSet = true;
         if (imageView.getDrawable() != null && imageView.getDrawable() instanceof DPLDrawable){
             ((DPLDrawable) imageView.getDrawable()).getTask().cancel(true);
         }
-        DPLTask task = new DPLTask(imageView);
-        task.setOptions(options,fileName);
+        DPLTask task = new DPLTask(imageView,DPLTask.TASK_TYPE_FILE);
+        task.setOptions(options);
         DPLDrawable drawable;
         if (defaultBitmap == null){
             drawable = new DPLDrawable(getContext().getResources(),fileName,task);
@@ -49,7 +50,23 @@ public class DummyPicLoader {
         imageView.setImageDrawable(drawable);
 
         task.execute(fileName);
-        return this;
+        return;
+    }
+
+    public void loadImageFromUrl(String urlAddr,ImageView imageView){
+        DPLTask task = new DPLTask(imageView,DPLTask.TASK_TYPE_URL);
+
+        task.setOptions(options);
+
+        DPLDrawable drawable;
+        if (defaultBitmap == null){
+            drawable = new DPLDrawable(getContext().getResources(),urlAddr,task);
+        }else {
+            drawable = new DPLDrawable(getContext().getResources(),defaultBitmap,task);
+        }
+        imageView.setImageDrawable(drawable);
+        task.execute(urlAddr);
+        return;
     }
 
     public DummyPicLoader setQuality(){

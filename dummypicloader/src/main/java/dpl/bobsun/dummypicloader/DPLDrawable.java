@@ -17,7 +17,7 @@ public class DPLDrawable extends BitmapDrawable {
         DPLTaskRef = new WeakReference(task);
     }
     public DPLDrawable(Resources res, Bitmap bitmap,DPLTask task){
-        super(res,bitmap);
+//        super(res,bitmap);
         DPLTaskRef = new WeakReference(task);
     }
     public DPLTask getTask(){
