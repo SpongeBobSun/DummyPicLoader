@@ -2,11 +2,16 @@ package dpl.bobsun.dummypicloader;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 /**
@@ -28,7 +33,18 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(String... strings) {
-        return BitmapFactory.decodeFile(strings[0], options);
+        FileInputStream fileInputStream;
+        try {
+            fileInputStream = new FileInputStream(strings[0]);
+            fileInputStream.getFD();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return Bitmap.createBitmap(300,300,null);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Bitmap.createBitmap(300,300,null);
+        }
+        return BitmapFactory.decodeStream(fileInputStream,new Rect(0,0,options.outWidth,options.outHeight),options);
     }
 
     @Override

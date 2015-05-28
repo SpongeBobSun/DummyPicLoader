@@ -1,14 +1,20 @@
 package dpl.bobsun.dummypicloadertest;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 
@@ -21,13 +27,17 @@ import dpl.bobsun.dummypicloader.DummyPicLoader;
 
 public class MainActivity extends ActionBarActivity {
 
+    int cellWidth;
+    int cellHeighht;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getDefaultcellSize();
         GridView gridView = (GridView) findViewById(R.id.id_grid_view);
         ArrayList pics = new ArrayList();
-        File[] files = Environment.getExternalStorageDirectory().listFiles(new FilenameFilter() {
+        File picDir = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM");
+        File[] files = picDir.listFiles(new FilenameFilter() {
                     @Override
                     public boolean accept(File file, String s) {
                         if (s.endsWith(".jpg") || s.endsWith(".png") || s.endsWith(".bmp"))
@@ -76,14 +86,27 @@ public class MainActivity extends ActionBarActivity {
             return list.size();
         }
 
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
             ImageView ret = (ImageView) convertView;
             if (ret == null) {
-               ret =  new ImageView(getContext());
+               ret = new ImageView(getContext());
+                AbsListView.LayoutParams layoutParams = new AbsListView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.height = cellHeighht;
+                layoutParams.width = cellWidth;
+                ret.setLayoutParams(layoutParams);
             }
-            DummyPicLoader.getInstance(getContext()).setDefaultImage(R.drawable.abc_ic_voice_search_api_mtrl_alpha).resize(300,300).loadImageFromFile((String) list.get(position), ret, R.drawable.abc_ic_menu_paste_mtrl_am_alpha);
+            DummyPicLoader.getInstance(getContext()).setDefaultImage(R.drawable.abc_ic_voice_search_api_mtrl_alpha).resize(cellWidth,cellHeighht).loadImageFromFile((String) list.get(position), ret, R.drawable.abc_ic_menu_paste_mtrl_am_alpha);
             return ret;
         }
     }
+
+    private void getDefaultcellSize(){
+        DisplayMetrics dm;
+        dm = this.getResources().getDisplayMetrics();
+        cellWidth = (dm.widthPixels-10) / 3;
+        cellHeighht = (dm.widthPixels-10) / 4;
+    }
+
 }
