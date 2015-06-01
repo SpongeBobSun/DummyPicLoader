@@ -40,7 +40,7 @@ public class MainActivity extends ActionBarActivity {
         File[] files = picDir.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {
-                if (s.endsWith(".jpg") || s.endsWith(".png") || s.endsWith(".bmp"))
+                if (s.endsWith(".jpg") || s.endsWith(".png") || s.endsWith(".bmp") || s.endsWith(".JPG") || s.endsWith(".BMP") || s.endsWith(".PNG"))
                     return true;
                 return false;
             }
@@ -48,9 +48,10 @@ public class MainActivity extends ActionBarActivity {
         for (int i = 0; i < files.length; i++){
             pics.add(files[i].getPath());
         }
+
         GridAdapter adapter = new GridAdapter(this,0,pics);
         gridView.setAdapter(adapter);
-        DummyPicLoader.getInstance(this).resize(200,100).loadImageFromUrl("http://www.baidu.com/img/bdlogo.png", (ImageView) findViewById(R.id.id_image_view));
+        DummyPicLoader.getInstance(this).loadImageFromUrl("https://www.baidu.com/img/bdlogo.png", (ImageView) findViewById(R.id.id_image_view));
 
     }
 
