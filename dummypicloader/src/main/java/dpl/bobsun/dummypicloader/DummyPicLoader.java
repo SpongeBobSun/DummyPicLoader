@@ -4,11 +4,14 @@ import android.content.Context;
 import android.database.DatabaseUtils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.net.URL;
+
+import dpl.bobsun.dummypicloader.cache.DPLRamCache;
 
 /**
  * Created by bobsun on 15-5-26.
@@ -19,11 +22,13 @@ public class DummyPicLoader {
     private boolean bmpSet;
     private Bitmap defaultBitmap = null;
     private BitmapFactory.Options options;
+    DPLRamCache ramCache;
     private DummyPicLoader(Context context){
         this.context = context;
         width = 0;
         height = 0;
         options = new BitmapFactory.Options();
+        ramCache = DPLRamCache.getStaticInstance();
     }
     private Context getContext(){
         return context;
@@ -36,10 +41,20 @@ public class DummyPicLoader {
     public void loadImageFromFile(String fileName,
                                             ImageView imageView){
         bmpSet = true;
-        if (imageView.getDrawable() != null && imageView.getDrawable() instanceof DPLDrawable){
+        if (imageView.getDrawable() != null && imageView.getDrawable() instanceof DPLDrawable) {
             ((DPLDrawable) imageView.getDrawable()).getTask().cancel(true);
         }
+
         DPLTask task = new DPLTask(imageView,DPLTask.TASK_TYPE_FILE);
+
+        Bitmap ramCacheBmp = ramCache.get(fileName);
+        if (ramCache.get(fileName) != null){
+            imageView.setImageDrawable(new DPLDrawable(getContext().getResources(),ramCache.get(fileName),task));
+            imageView.setImageBitmap(ramCacheBmp);
+            Log.e("FromRam","found");
+            return;
+        }
+
         task.setOptions(options);
         DPLDrawable drawable;
         if (defaultBitmap == null){
@@ -48,7 +63,6 @@ public class DummyPicLoader {
             drawable = new DPLDrawable(getContext().getResources(),defaultBitmap,task);
         }
         imageView.setImageDrawable(drawable);
-
         task.execute(fileName);
         return;
     }

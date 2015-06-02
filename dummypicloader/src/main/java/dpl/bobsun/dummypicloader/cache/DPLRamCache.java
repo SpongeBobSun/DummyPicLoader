@@ -1,7 +1,11 @@
 package dpl.bobsun.dummypicloader.cache;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
+import android.util.Log;
+
+import java.util.IllegalFormatException;
 
 /**
  * Created by bobsun on 15-6-1.
@@ -9,8 +13,16 @@ import android.support.v4.util.LruCache;
 public class DPLRamCache {
     private static DPLRamCache staticInstance;
     LruCache<String, Bitmap> cache ;
-    private DPLRamCache(){
+    private int maxSize = (int) (Runtime.getRuntime().maxMemory() / 1024) / 8;
 
+    private DPLRamCache(){
+        Log.e("maxSize",""+maxSize);
+        cache = new LruCache<String,Bitmap>(maxSize){
+            @Override
+            protected int sizeOf(String key, Bitmap value){
+                return value.getRowBytes() * value.getHeight() / 1024;
+            }
+        };
     }
 
     public static DPLRamCache getStaticInstance(){
@@ -20,13 +32,35 @@ public class DPLRamCache {
         return staticInstance;
     }
 
-    public void put(String tag, Bitmap bitmap){
-
+    public synchronized boolean put(String tag, Bitmap bitmap){
+        if (tag == null ||tag.equals("") || bitmap == null){
+            return false;
+        }
+        cache.put(tag,bitmap);
+        Log.e("RamCache","put");
+        return true;
     }
 
-    public Bitmap get(String tag){
-        Bitmap ret = null;
-        return ret;
+    public synchronized Bitmap get(String tag){
+        return cache.get(tag);
     }
+
+    public synchronized void clear(){
+        cache.evictAll();
+    }
+
+
+    /**
+     * Resize cache.
+     * @param size
+     * Default size is max runtime memory divide 8.
+     */
+    public void resize(int size){
+        if (size <= 0)
+            return;
+        maxSize = size;
+        cache.resize(size);
+    }
+
 
 }

@@ -19,6 +19,8 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
+import dpl.bobsun.dummypicloader.cache.DPLRamCache;
+
 /**
  * Created by bobsun on 15-5-26.
  */
@@ -32,6 +34,7 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
     public static final int TASK_TYPE_URL = 2;
     public static final int TASK_TYPE_RES = 3;
 
+    String cacheKey;
 
     public DPLTask(ImageView imageView,int type){
         imageViewWeakReference = new WeakReference(imageView);
@@ -45,6 +48,8 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(String... strings) {
+
+        cacheKey = strings[0];
 
         InputStream inputStream = null;
 
@@ -125,6 +130,7 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
         if (this == dplTask && imageView != null) {
             imageView.setImageBitmap(result);
         }
+        DPLRamCache.getStaticInstance().put(cacheKey,result);
 
     }
 
