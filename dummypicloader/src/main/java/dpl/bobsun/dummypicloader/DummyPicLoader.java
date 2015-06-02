@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.net.URL;
 
+import dpl.bobsun.dummypicloader.cache.DPLDiskCache;
 import dpl.bobsun.dummypicloader.cache.DPLRamCache;
 
 /**
@@ -68,6 +69,12 @@ public class DummyPicLoader {
     }
 
     public void loadImageFromUrl(String urlAddr,ImageView imageView){
+
+        if (DPLDiskCache.getStaticInstance().isCached(urlAddr)){
+            loadImageFromFile(DPLDiskCache.getStaticInstance().get(urlAddr),imageView);
+            return;
+        }
+
         DPLTask task = new DPLTask(imageView,DPLTask.TASK_TYPE_URL);
 
         task.setOptions(options);

@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
+import dpl.bobsun.dummypicloader.cache.DPLDiskCache;
 import dpl.bobsun.dummypicloader.cache.DPLRamCache;
 
 /**
@@ -131,7 +132,9 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
             imageView.setImageBitmap(result);
         }
         DPLRamCache.getStaticInstance().put(cacheKey,result);
-
+        if (type == TASK_TYPE_URL && !DPLDiskCache.getStaticInstance().isCached(cacheKey)){
+            DPLDiskCache.getStaticInstance().put(cacheKey,result);
+        }
     }
 
     private static DPLTask getBitmapWorkerTask(ImageView imageView) {

@@ -36,6 +36,7 @@ public class DPLRamCache {
         if (tag == null ||tag.equals("") || bitmap == null){
             return false;
         }
+        cache.remove(tag);
         cache.put(tag,bitmap);
         Log.e("RamCache","put");
         return true;
