@@ -17,10 +17,12 @@ Set a holder image when loader is processing.
 
 Resize picture.
 
-`DummyPicLoader.getInstance(getContext()).resize(300,400)..loadImageFromFile(fileName,imageView);`
+`DummyPicLoader.getInstance(getContext()).resize(300,400).loadImageFromFile(fileName,imageView);`
 ##To-do
 ~~Provide image ram cache.~~
 
 ~~Provide image local disk cache.~~
 
 Documentation.
+
+Test cases.
