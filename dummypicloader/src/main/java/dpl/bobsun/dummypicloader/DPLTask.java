@@ -41,6 +41,7 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
 
     String cacheKey;
     private Context context;
+    private boolean resized;
 
     public DPLTask(ImageView imageView,int type){
         imageViewWeakReference = new WeakReference(imageView);
@@ -61,6 +62,10 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
     protected Bitmap doInBackground(String... strings) {
 
         cacheKey = strings[0];
+
+        if (resized){
+            cacheKey = cacheKey + options.outWidth + options.outHeight;
+        }
 
         InputStream inputStream = null;
 
@@ -168,7 +173,8 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
         return null;
     }
 
-    public void setOptions(BitmapFactory.Options options){
+    public void setOptions(BitmapFactory.Options options, boolean resized){
         this.options = options;
+        this.resized = resized;
     }
 }

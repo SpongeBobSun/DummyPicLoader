@@ -21,9 +21,11 @@ public class DummyPicLoader {
     Context context;
     private int width, height;
     private boolean bmpSet;
+    private boolean resized;
     private Bitmap defaultBitmap = null;
     private BitmapFactory.Options options;
-    DPLRamCache ramCache;
+    private String cacheKey;
+    private DPLRamCache ramCache;
     private DummyPicLoader(Context context){
         this.context = context;
         width = 0;
@@ -42,21 +44,28 @@ public class DummyPicLoader {
     public void loadImageFromFile(String fileName,
                                             ImageView imageView){
         bmpSet = true;
+
+        if (resized){
+            cacheKey = fileName + options.outWidth + options.outHeight;
+        }else{
+            cacheKey = fileName;
+        }
+
         if (imageView.getDrawable() != null && imageView.getDrawable() instanceof DPLDrawable) {
             ((DPLDrawable) imageView.getDrawable()).getTask().cancel(true);
         }
 
         DPLTask task = new DPLTask(imageView,DPLTask.TASK_TYPE_FILE);
 
-        Bitmap ramCacheBmp = ramCache.get(fileName);
-        if (ramCache.get(fileName) != null){
-            imageView.setImageDrawable(new DPLDrawable(getContext().getResources(),ramCache.get(fileName),task));
+        Bitmap ramCacheBmp = ramCache.get(cacheKey);
+        if (ramCacheBmp != null){
+            Log.e("DummyPicLoader","found from ram cache");
+            imageView.setImageDrawable(new DPLDrawable(getContext().getResources(),ramCacheBmp,task));
             imageView.setImageBitmap(ramCacheBmp);
-            Log.e("FromRam","found");
             return;
         }
 
-        task.setOptions(options);
+        task.setOptions(options,resized);
         DPLDrawable drawable;
         if (defaultBitmap == null){
             drawable = new DPLDrawable(getContext().getResources(),fileName,task);
@@ -70,14 +79,23 @@ public class DummyPicLoader {
 
     public void loadImageFromUrl(String urlAddr,ImageView imageView){
         bmpSet = true;
-        if (DPLDiskCache.getStaticInstance().isCached(urlAddr)){
+
+        if (resized){
+            cacheKey = urlAddr + options.outWidth + options.outHeight;
+        }else{
+            cacheKey = urlAddr;
+        }
+
+        if (DPLDiskCache.getStaticInstance().isCached(cacheKey)){
+            //WARNING
+            //When calling loadImageFromFile, it will automatically append size info to 'urlAddr' and will find it from
             loadImageFromFile(DPLDiskCache.getStaticInstance().get(urlAddr), imageView);
             return;
         }
 
         DPLTask task = new DPLTask(imageView,DPLTask.TASK_TYPE_URL);
 
-        task.setOptions(options);
+        task.setOptions(options,resized);
 
         DPLDrawable drawable;
         if (defaultBitmap == null){
@@ -104,11 +122,10 @@ public class DummyPicLoader {
         if (ramCache.get(uri) != null){
             imageView.setImageDrawable(new DPLDrawable(getContext().getResources(),ramCache.get(uri),task));
             imageView.setImageBitmap(ramCacheBmp);
-            Log.e("FromRam","found");
             return;
         }
 
-        task.setOptions(options);
+        task.setOptions(options,resized);
         DPLDrawable drawable;
         if (defaultBitmap == null){
             drawable = new DPLDrawable(getContext().getResources(),uri,task);
@@ -128,7 +145,7 @@ public class DummyPicLoader {
         checkBitmapState();
         options.outWidth = width;
         options.outHeight = height;
-
+        this.resized = true;
         return this;
     }
 
