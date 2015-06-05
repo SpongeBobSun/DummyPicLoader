@@ -69,9 +69,9 @@ public class DummyPicLoader {
     }
 
     public void loadImageFromUrl(String urlAddr,ImageView imageView){
-
+        bmpSet = true;
         if (DPLDiskCache.getStaticInstance().isCached(urlAddr)){
-            loadImageFromFile(DPLDiskCache.getStaticInstance().get(urlAddr),imageView);
+            loadImageFromFile(DPLDiskCache.getStaticInstance().get(urlAddr), imageView);
             return;
         }
 
@@ -87,6 +87,36 @@ public class DummyPicLoader {
         }
         imageView.setImageDrawable(drawable);
         task.execute(urlAddr);
+        return;
+    }
+
+    public void loadImageFromUri(String uri, ImageView imageView){
+        bmpSet = true;
+
+        if (imageView.getDrawable() != null && imageView.getDrawable() instanceof DPLDrawable) {
+            ((DPLDrawable) imageView.getDrawable()).getTask().cancel(true);
+        }
+
+        DPLTask task = new DPLTask(imageView,DPLTask.TASK_TYPE_URI);
+        task.setContext(context);
+
+        Bitmap ramCacheBmp = ramCache.get(uri);
+        if (ramCache.get(uri) != null){
+            imageView.setImageDrawable(new DPLDrawable(getContext().getResources(),ramCache.get(uri),task));
+            imageView.setImageBitmap(ramCacheBmp);
+            Log.e("FromRam","found");
+            return;
+        }
+
+        task.setOptions(options);
+        DPLDrawable drawable;
+        if (defaultBitmap == null){
+            drawable = new DPLDrawable(getContext().getResources(),uri,task);
+        }else {
+            drawable = new DPLDrawable(getContext().getResources(),defaultBitmap,task);
+        }
+        imageView.setImageDrawable(drawable);
+        task.execute(uri);
         return;
     }
 

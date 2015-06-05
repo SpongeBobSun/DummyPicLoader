@@ -1,9 +1,12 @@
 package dpl.bobsun.dummypicloader;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
@@ -34,8 +37,10 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
     public static final int TASK_TYPE_FILE = 1;
     public static final int TASK_TYPE_URL = 2;
     public static final int TASK_TYPE_RES = 3;
+    public static final int TASK_TYPE_URI = 4;
 
     String cacheKey;
+    private Context context;
 
     public DPLTask(ImageView imageView,int type){
         imageViewWeakReference = new WeakReference(imageView);
@@ -45,6 +50,11 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
     @Override
     protected void onPreExecute(){
 
+    }
+
+    public DPLTask setContext(Context context){
+        this.context = context;
+        return this;
     }
 
     @Override
@@ -111,6 +121,16 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
                 e.printStackTrace();
             }
         }
+        if (this.type == TASK_TYPE_URI){
+            Uri bmpUri = Uri.parse(strings[0]);
+            ContentResolver contentResolver = context.getContentResolver();
+            try{
+                inputStream = contentResolver.openInputStream(bmpUri);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
         return BitmapFactory.decodeStream(inputStream,new Rect(0,0,options.outWidth,options.outHeight),options);
     }
 
