@@ -43,10 +43,7 @@ public class DPLDiskCache {
      * false if this image can not be found.
      */
     public boolean isCached(String key){
-        String[] result = new File(cacheFolderPath).list(new ImageCacheFinder(key));
-        if (result != null && result.length != 0)
-            return true;
-        return false;
+        return new File(cacheFolderPath + key.hashCode()).exists();
     }
 
     /**
@@ -87,11 +84,7 @@ public class DPLDiskCache {
      *  <b>Cached Image File Path</b>
      */
     public String get(String key){
-        String fileName = null;
-        String[] result = cacheFolder.list(new ImageCacheFinder(key));
-        if (result.length != 0)
-            fileName = result[0];
-        return fileName;
+        return cacheFolder.getPath() + "/" + key.hashCode();
     }
 
     /**

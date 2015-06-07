@@ -79,7 +79,7 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
                     options.inSampleSize =fakeOption.outWidth / options.outWidth;
                     options.inScaled = true;
                 }
-                if ( fakeOption.outWidth / fakeOption.outWidth < fakeOption.outHeight / options.outHeight) {
+                if ( fakeOption.outWidth / options.outWidth < fakeOption.outHeight / options.outHeight) {
                     options.inSampleSize = fakeOption.outHeight / options.outHeight;
                     options.inScaled = true;
                 }
@@ -113,7 +113,7 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
                         options.inSampleSize = fakeOption.outWidth / options.outWidth;
                         options.inScaled = true;
                     }
-                    if (fakeOption.outWidth / fakeOption.outWidth < fakeOption.outHeight / options.outHeight) {
+                    if (fakeOption.outWidth / options.outWidth < fakeOption.outHeight / options.outHeight) {
                         options.inSampleSize = fakeOption.outHeight / options.outHeight;
                         options.inScaled = true;
                     }
@@ -130,6 +130,21 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
             Uri bmpUri = Uri.parse(strings[0]);
             ContentResolver contentResolver = context.getContentResolver();
             try{
+                inputStream = contentResolver.openInputStream(bmpUri);
+                if (options.outWidth !=0 && options.outHeight !=0){
+                    BitmapFactory.Options fakeOption = new BitmapFactory.Options();
+                    fakeOption.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFile(strings[0],fakeOption);
+                    if ( fakeOption.outWidth / options.outWidth > fakeOption.outHeight / options.outHeight){
+                        options.inSampleSize =fakeOption.outWidth / options.outWidth;
+                        options.inScaled = true;
+                    }
+                    if ( fakeOption.outWidth / options.outWidth < fakeOption.outHeight / options.outHeight) {
+                        options.inSampleSize = fakeOption.outHeight / options.outHeight;
+                        options.inScaled = true;
+                    }
+                }
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
                 inputStream = contentResolver.openInputStream(bmpUri);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
