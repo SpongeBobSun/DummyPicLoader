@@ -22,6 +22,7 @@ public class DummyPicLoader {
     private int width, height;
     private boolean bmpSet;
     private boolean resized;
+    private boolean fromUrl;
     private Bitmap defaultBitmap = null;
     private BitmapFactory.Options options;
     private String cacheKey;
@@ -45,10 +46,11 @@ public class DummyPicLoader {
                                             ImageView imageView){
         bmpSet = true;
 
-        if (resized){
+        if (resized && !fromUrl){
             cacheKey = fileName + options.outWidth + options.outHeight;
         }else{
-            cacheKey = fileName;
+            if (!resized)
+                cacheKey = fileName;
         }
 
         if (imageView.getDrawable() != null && imageView.getDrawable() instanceof DPLDrawable) {
@@ -89,7 +91,8 @@ public class DummyPicLoader {
         if (DPLDiskCache.getStaticInstance().isCached(cacheKey)){
             //WARNING
             //When calling loadImageFromFile, it will automatically append size info to 'urlAddr' and will find it from
-            loadImageFromFile(DPLDiskCache.getStaticInstance().get(urlAddr), imageView);
+            fromUrl = true;
+            loadImageFromFile(DPLDiskCache.getStaticInstance().get(cacheKey), imageView);
             return;
         }
 
@@ -100,10 +103,13 @@ public class DummyPicLoader {
         DPLDrawable drawable;
         if (defaultBitmap == null){
             drawable = new DPLDrawable(getContext().getResources(),urlAddr,task);
+            imageView.setImageDrawable(drawable);
         }else {
             drawable = new DPLDrawable(getContext().getResources(),defaultBitmap,task);
+            imageView.setImageDrawable(drawable);
+            imageView.setImageBitmap(defaultBitmap);
         }
-        imageView.setImageDrawable(drawable);
+
         task.execute(urlAddr);
         return;
     }
