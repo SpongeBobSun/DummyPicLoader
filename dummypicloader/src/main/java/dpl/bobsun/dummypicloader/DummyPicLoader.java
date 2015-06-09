@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.net.URL;
 
+import dpl.bobsun.dummypicloader.cache.DPLDefaultImageCache;
 import dpl.bobsun.dummypicloader.cache.DPLDiskCache;
 import dpl.bobsun.dummypicloader.cache.DPLRamCache;
 
@@ -23,7 +24,7 @@ public class DummyPicLoader {
     private boolean bmpSet;
     private boolean resized;
     private boolean fromUrl;
-    private Bitmap defaultBitmap = null;
+    private int defaultBitmap = 0;
     private BitmapFactory.Options options;
     private String cacheKey;
     private DPLRamCache ramCache;
@@ -69,10 +70,10 @@ public class DummyPicLoader {
 
         task.setOptions(options,resized);
         DPLDrawable drawable;
-        if (defaultBitmap == null){
+        if (defaultBitmap == 0){
             drawable = new DPLDrawable(getContext().getResources(),fileName,task);
         }else {
-            drawable = new DPLDrawable(getContext().getResources(),defaultBitmap,task);
+            drawable = new DPLDrawable(getContext().getResources(),DPLDefaultImageCache.getStaticInstance(context).get(defaultBitmap),task);
         }
         imageView.setImageDrawable(drawable);
         task.execute(fileName);
@@ -101,13 +102,13 @@ public class DummyPicLoader {
         task.setOptions(options,resized);
 
         DPLDrawable drawable;
-        if (defaultBitmap == null){
+        if (defaultBitmap == 0){
             drawable = new DPLDrawable(getContext().getResources(),urlAddr,task);
             imageView.setImageDrawable(drawable);
         }else {
-            drawable = new DPLDrawable(getContext().getResources(),defaultBitmap,task);
+            drawable = new DPLDrawable(getContext().getResources(),DPLDefaultImageCache.getStaticInstance(context).get(defaultBitmap),task);
             imageView.setImageDrawable(drawable);
-            imageView.setImageBitmap(defaultBitmap);
+            imageView.setImageBitmap(DPLDefaultImageCache.getStaticInstance(context).get(defaultBitmap));
         }
 
         task.execute(urlAddr);
@@ -133,10 +134,10 @@ public class DummyPicLoader {
 
         task.setOptions(options,resized);
         DPLDrawable drawable;
-        if (defaultBitmap == null){
+        if (defaultBitmap == 0){
             drawable = new DPLDrawable(getContext().getResources(),uri,task);
         }else {
-            drawable = new DPLDrawable(getContext().getResources(),defaultBitmap,task);
+            drawable = new DPLDrawable(getContext().getResources(),DPLDefaultImageCache.getStaticInstance(context).get(defaultBitmap),task);
         }
         imageView.setImageDrawable(drawable);
         task.execute(uri);
@@ -169,8 +170,10 @@ public class DummyPicLoader {
 
     public DummyPicLoader setDefaultImage(int defaultResId){
         checkBitmapState();
-        if (defaultBitmap == null)
-            defaultBitmap = BitmapFactory.decodeResource(context.getResources(),defaultResId);
+        if (defaultBitmap == 0)
+            defaultBitmap = defaultResId;
+        DPLDefaultImageCache.getStaticInstance(getContext()).add(defaultResId);
         return this;
     }
+
 }
