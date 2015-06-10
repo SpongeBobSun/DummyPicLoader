@@ -54,7 +54,7 @@ public class DummyPicLoader {
                 cacheKey = fileName;
         }
 
-        if (imageView.getDrawable() != null && imageView.getDrawable() instanceof DPLDrawable) {
+        if (imageView.getDrawable() != null && imageView.getDrawable() instanceof DPLDrawable && ((DPLDrawable)imageView.getDrawable()).getTask() !=null) {
             ((DPLDrawable) imageView.getDrawable()).getTask().cancel(true);
         }
 
@@ -74,6 +74,7 @@ public class DummyPicLoader {
             drawable = new DPLDrawable(getContext().getResources(),fileName,task);
         }else {
             drawable = new DPLDrawable(getContext().getResources(),DPLDefaultImageCache.getStaticInstance(context).get(defaultBitmap),task);
+            task.setDefaultImgResId(defaultBitmap);
         }
         imageView.setImageDrawable(drawable);
         task.execute(fileName);
@@ -109,6 +110,7 @@ public class DummyPicLoader {
             drawable = new DPLDrawable(getContext().getResources(),DPLDefaultImageCache.getStaticInstance(context).get(defaultBitmap),task);
             imageView.setImageDrawable(drawable);
             imageView.setImageBitmap(DPLDefaultImageCache.getStaticInstance(context).get(defaultBitmap));
+            task.setDefaultImgResId(defaultBitmap);
         }
 
         task.execute(urlAddr);
@@ -118,7 +120,7 @@ public class DummyPicLoader {
     public void loadImageFromUri(String uri, ImageView imageView){
         bmpSet = true;
 
-        if (imageView.getDrawable() != null && imageView.getDrawable() instanceof DPLDrawable) {
+        if (imageView.getDrawable() != null && imageView.getDrawable() instanceof DPLDrawable && ((DPLDrawable)imageView.getDrawable()).getTask() !=null) {
             ((DPLDrawable) imageView.getDrawable()).getTask().cancel(true);
         }
 
@@ -127,7 +129,7 @@ public class DummyPicLoader {
 
         Bitmap ramCacheBmp = ramCache.get(uri);
         if (ramCache.get(uri) != null){
-            imageView.setImageDrawable(new DPLDrawable(getContext().getResources(),ramCache.get(uri),task));
+            imageView.setImageDrawable(new DPLDrawable(getContext().getResources(), ramCache.get(uri), task));
             imageView.setImageBitmap(ramCacheBmp);
             return;
         }
@@ -138,6 +140,7 @@ public class DummyPicLoader {
             drawable = new DPLDrawable(getContext().getResources(),uri,task);
         }else {
             drawable = new DPLDrawable(getContext().getResources(),DPLDefaultImageCache.getStaticInstance(context).get(defaultBitmap),task);
+            task.setDefaultImgResId(defaultBitmap);
         }
         imageView.setImageDrawable(drawable);
         task.execute(uri);

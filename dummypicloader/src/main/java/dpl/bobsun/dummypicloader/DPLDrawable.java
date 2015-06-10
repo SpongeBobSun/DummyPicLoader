@@ -22,5 +22,4 @@ public class DPLDrawable extends BitmapDrawable {
     public DPLTask getTask(){
         return (DPLTask) DPLTaskRef.get();
     }
-
 }
