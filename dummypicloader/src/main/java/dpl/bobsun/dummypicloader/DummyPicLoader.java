@@ -22,7 +22,7 @@ public class DummyPicLoader {
     Context context;
     private int width, height;
     private boolean bmpSet;
-    private boolean resized;
+    private boolean resized = false;
     private boolean fromUrl;
     private int defaultBitmap = 0;
     private BitmapFactory.Options options;
