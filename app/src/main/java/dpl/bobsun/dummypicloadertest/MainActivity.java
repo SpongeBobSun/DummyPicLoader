@@ -51,7 +51,9 @@ public class MainActivity extends ActionBarActivity {
 
         GridAdapter adapter = new GridAdapter(this,0,pics);
         gridView.setAdapter(adapter);
-        DummyPicLoader.getInstance(this).loadImageFromUrl("https://www.baidu.com/img/bdlogo.png", (ImageView) findViewById(R.id.id_image_view));
+        DummyPicLoader.getInstance(this).
+                loadImageFromUrl("http://c.hiphotos.baidu.com/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=fd711eaca2ec08fa320d1bf538875608/e1fe9925bc315c603edad1fc8fb1cb1349547751.jpg",
+                        (ImageView) findViewById(R.id.id_image_view));
 
     }
 

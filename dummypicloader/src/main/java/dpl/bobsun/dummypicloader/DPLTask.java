@@ -98,7 +98,8 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
 //                e.printStackTrace();
                 somethingWrong = true;
                 if (defaultImgResId == 0) {
-                    return Bitmap.createBitmap(options.outWidth, options.outHeight, Bitmap.Config.RGB_565);
+                    return Bitmap.createBitmap(options.outWidth == 0 ? 300: options.outWidth,
+                                                options.outHeight == 0 ? 300: options.outHeight, Bitmap.Config.RGB_565);
                 }else{
                     return null;
                 }
@@ -106,7 +107,8 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
 //                e.printStackTrace();
                 somethingWrong = true;
                 if (defaultImgResId == 0) {
-                    return Bitmap.createBitmap(options.outWidth, options.outHeight, Bitmap.Config.RGB_565);
+                    return Bitmap.createBitmap(options.outWidth == 0 ? 300: options.outWidth,
+                                                options.outHeight == 0 ? 300: options.outHeight, Bitmap.Config.RGB_565);
                 }else{
                     return null;
                 }
@@ -140,14 +142,16 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
             } catch (MalformedURLException e) {
                 somethingWrong = true;
                 if (defaultImgResId == 0) {
-                    return Bitmap.createBitmap(options.outWidth, options.outHeight, Bitmap.Config.RGB_565);
+                    return Bitmap.createBitmap(options.outWidth == 0 ? 300: options.outWidth,
+                                                options.outHeight == 0 ? 300: options.outHeight, Bitmap.Config.RGB_565);
                 }else{
                     return null;
                 }
             } catch (IOException e) {
                 somethingWrong = true;
                 if (defaultImgResId == 0) {
-                    return Bitmap.createBitmap(options.outWidth, options.outHeight, Bitmap.Config.RGB_565);
+                    return Bitmap.createBitmap(options.outWidth == 0 ? 300: options.outWidth,
+                                                options.outHeight == 0 ? 300: options.outHeight, Bitmap.Config.RGB_565);
                 }else{
                     return null;
                 }
@@ -173,7 +177,8 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
             } catch (FileNotFoundException e) {
                 somethingWrong = true;
                 if (defaultImgResId == 0) {
-                    return Bitmap.createBitmap(options.outWidth, options.outHeight, Bitmap.Config.RGB_565);
+                    return Bitmap.createBitmap(options.outWidth == 0 ? 300: options.outWidth,
+                                                options.outHeight == 0 ? 300: options.outHeight, Bitmap.Config.RGB_565);
                 }else{
                     return null;
                 }
@@ -197,8 +202,8 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
         final ImageView imageView = imageViewWeakReference.get();
         final DPLTask dplTask =
                 getBitmapWorkerTask(imageView);
-        if (this == dplTask && imageView != null &&
-                ((defaultImgResId !=0 && !somethingWrong) || (defaultImgResId == 0 && somethingWrong))) {
+        if (this == dplTask && imageView != null/* &&
+                ((defaultImgResId !=0 && !somethingWrong) || (defaultImgResId == 0 && somethingWrong))*/) {
             imageView.setImageBitmap(result);
             if (defaultImgResId ==0 && somethingWrong)
                 return;
