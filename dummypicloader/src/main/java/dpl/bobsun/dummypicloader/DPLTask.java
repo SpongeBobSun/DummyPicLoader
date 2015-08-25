@@ -47,6 +47,7 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
     String cacheKey;
     private Context context;
     private boolean resized;
+    private boolean cropped = false;
     private int defaultImgResId = 0;
     private boolean somethingWrong;
 
@@ -74,6 +75,7 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
             cacheKey = cacheKey + options.outWidth + options.outHeight;
         }
 
+
         InputStream inputStream = null;
 
         if (this.type == TASK_TYPE_FILE) {
@@ -95,7 +97,6 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
                 inputStream = new FileInputStream(strings[0]);
                 ((FileInputStream)inputStream).getFD();
             } catch (FileNotFoundException e) {
-//                e.printStackTrace();
                 somethingWrong = true;
                 if (defaultImgResId == 0) {
                     return Bitmap.createBitmap(options.outWidth == 0 ? 300: options.outWidth,
@@ -104,7 +105,6 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
                     return null;
                 }
             } catch (IOException e) {
-//                e.printStackTrace();
                 somethingWrong = true;
                 if (defaultImgResId == 0) {
                     return Bitmap.createBitmap(options.outWidth == 0 ? 300: options.outWidth,
@@ -204,6 +204,9 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
                 getBitmapWorkerTask(imageView);
         if (this == dplTask && imageView != null/* &&
                 ((defaultImgResId !=0 && !somethingWrong) || (defaultImgResId == 0 && somethingWrong))*/) {
+            if (cropped){
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            }
             imageView.setImageBitmap(result);
             if (defaultImgResId ==0 && somethingWrong)
                 return;
@@ -225,9 +228,10 @@ public class DPLTask extends AsyncTask<String, Integer, Bitmap> {
         return null;
     }
 
-    public void setOptions(BitmapFactory.Options options, boolean resized){
+    public void setOptions(BitmapFactory.Options options, boolean resized, boolean cropped){
         this.options = options;
         this.resized = resized;
+        this.cropped = cropped;
     }
 
     public void setDefaultImgResId(int id){

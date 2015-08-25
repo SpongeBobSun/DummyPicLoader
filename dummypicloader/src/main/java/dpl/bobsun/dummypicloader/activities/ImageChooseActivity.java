@@ -12,9 +12,10 @@ import android.widget.GridView;
 
 import java.util.ArrayList;
 
-import sun.bob.jswebview.R;
-import sun.bob.jswebview.adapters.ImageAdapter;
-import sun.bob.jswebview.utils.DisplayUtil;
+import dpl.bobsun.dummypicloader.R;
+import dpl.bobsun.dummypicloader.adapters.ImageAdapter;
+import dpl.bobsun.dummypicloader.utils.DisplayUtil;
+
 
 /**
  * Created by bob.sun on 15/8/5.

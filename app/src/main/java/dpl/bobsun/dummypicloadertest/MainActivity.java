@@ -102,7 +102,7 @@ public class MainActivity extends ActionBarActivity {
                 layoutParams.width = cellWidth;
                 ret.setLayoutParams(layoutParams);
             }
-            DummyPicLoader.getInstance(getContext()).setDefaultImage(R.drawable.abc_ic_voice_search_api_mtrl_alpha).resize(cellWidth,cellHeighht).loadImageFromFile((String) list.get(position), ret);
+            DummyPicLoader.getInstance(getContext()).setDefaultImage(R.drawable.abc_ic_voice_search_api_mtrl_alpha).resize(cellWidth,cellHeighht).crop(true).loadImageFromFile((String) list.get(position), ret);
             return ret;
         }
     }

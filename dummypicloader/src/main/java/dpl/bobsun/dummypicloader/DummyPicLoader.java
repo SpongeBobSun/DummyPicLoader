@@ -24,6 +24,7 @@ public class DummyPicLoader {
     private boolean bmpSet;
     private boolean resized = false;
     private boolean fromUrl;
+    private boolean crop = false;
     private int defaultBitmap = 0;
     private BitmapFactory.Options options;
     private String cacheKey;
@@ -68,7 +69,7 @@ public class DummyPicLoader {
             return;
         }
 
-        task.setOptions(options,resized);
+        task.setOptions(options, resized, crop);
         DPLDrawable drawable;
         if (defaultBitmap == 0){
             drawable = new DPLDrawable(getContext().getResources(),fileName,task);
@@ -100,7 +101,7 @@ public class DummyPicLoader {
 
         DPLTask task = new DPLTask(imageView,DPLTask.TASK_TYPE_URL);
 
-        task.setOptions(options,resized);
+        task.setOptions(options, resized, crop);
 
         DPLDrawable drawable;
         if (defaultBitmap == 0){
@@ -141,7 +142,7 @@ public class DummyPicLoader {
             return;
         }
 
-        task.setOptions(options,resized);
+        task.setOptions(options, resized, crop);
         DPLDrawable drawable;
         if (defaultBitmap == 0){
             drawable = new DPLDrawable(getContext().getResources(),uri,task);
@@ -166,6 +167,10 @@ public class DummyPicLoader {
         return this;
     }
 
+    public DummyPicLoader crop(boolean isCrop){
+        this.crop = isCrop;
+        return this;
+    }
 
     public DummyPicLoader roundCorner(float radius){
         checkBitmapState();
