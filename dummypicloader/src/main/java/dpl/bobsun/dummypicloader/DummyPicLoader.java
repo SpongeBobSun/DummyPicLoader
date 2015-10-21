@@ -4,12 +4,16 @@ import android.content.Context;
 import android.database.DatabaseUtils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.net.URL;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import dpl.bobsun.dummypicloader.cache.DPLDefaultImageCache;
 import dpl.bobsun.dummypicloader.cache.DPLDiskCache;
@@ -29,12 +33,14 @@ public class DummyPicLoader {
     private BitmapFactory.Options options;
     private String cacheKey;
     private DPLRamCache ramCache;
+    private ExecutorService threadPool;
     private DummyPicLoader(Context context){
         this.context = context;
         width = 0;
         height = 0;
         options = new BitmapFactory.Options();
         ramCache = DPLRamCache.getStaticInstance();
+        threadPool = Executors.newCachedThreadPool();
     }
     private Context getContext(){
         return context;
@@ -78,7 +84,7 @@ public class DummyPicLoader {
             task.setDefaultImgResId(defaultBitmap);
         }
         imageView.setImageDrawable(drawable);
-        task.execute(fileName);
+        task.executeOnExecutor(threadPool,fileName);
         return;
     }
 
@@ -114,7 +120,7 @@ public class DummyPicLoader {
             task.setDefaultImgResId(defaultBitmap);
         }
 
-        task.execute(urlAddr);
+        task.executeOnExecutor(threadPool, urlAddr);
         return;
     }
 
@@ -151,7 +157,7 @@ public class DummyPicLoader {
             task.setDefaultImgResId(defaultBitmap);
         }
         imageView.setImageDrawable(drawable);
-        task.execute(uri);
+        task.executeOnExecutor(threadPool, uri);
         return;
     }
 

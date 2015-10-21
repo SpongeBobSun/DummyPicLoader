@@ -20,14 +20,16 @@ public class ImagePreviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_imagepreviewactivity);
         images = getIntent().getStringArrayListExtra("image_list");
-        setupViewPager();
+        int index = getIntent().getIntExtra("start_image", 0);
+        setupViewPager(index);
 //        DummyPicLoader.getInstance(this.getApplicationContext()).loadImageFromFile(getIntent().getStringExtra("image_file_path"), (ImageView) findViewById(R.id.id_imageview));
     }
 
-    private void setupViewPager(){
+    private void setupViewPager(int index){
         ViewPager viewPager = (ViewPager) findViewById(R.id.id_viewpager_images);
         ImageViewPagerAdapter imageViewPagerAdapter = new ImageViewPagerAdapter(getSupportFragmentManager());
         imageViewPagerAdapter.setImages(images);
         viewPager.setAdapter(imageViewPagerAdapter);
+        viewPager.setCurrentItem(index);
     }
 }

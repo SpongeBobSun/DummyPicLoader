@@ -2,6 +2,7 @@ package dpl.bobsun.dummypicloadertest;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridLayout;
 import android.widget.GridView;
@@ -23,6 +25,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 
 import dpl.bobsun.dummypicloader.DummyPicLoader;
+import dpl.bobsun.dummypicloader.activities.ImagePreviewActivity;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -35,7 +38,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         getDefaultcellSize();
         GridView gridView = (GridView) findViewById(R.id.id_grid_view);
-        ArrayList pics = new ArrayList();
+        final ArrayList pics = new ArrayList();
         File picDir = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM");
         File[] files = picDir.listFiles(new FilenameFilter() {
             @Override
@@ -54,7 +57,15 @@ public class MainActivity extends ActionBarActivity {
         DummyPicLoader.getInstance(this).
                 loadImageFromUrl("http://c.hiphotos.baidu.com/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=fd711eaca2ec08fa320d1bf538875608/e1fe9925bc315c603edad1fc8fb1cb1349547751.jpg",
                         (ImageView) findViewById(R.id.id_image_view));
-
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, ImagePreviewActivity.class);
+                intent.putStringArrayListExtra("image_list", pics);
+                intent.putExtra("start_image", position);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -102,7 +113,7 @@ public class MainActivity extends ActionBarActivity {
                 layoutParams.width = cellWidth;
                 ret.setLayoutParams(layoutParams);
             }
-            DummyPicLoader.getInstance(getContext()).setDefaultImage(R.drawable.abc_ic_voice_search_api_mtrl_alpha).resize(cellWidth,cellHeighht).crop(true).loadImageFromFile((String) list.get(position), ret);
+            DummyPicLoader.getInstance(getContext()).setDefaultImage(R.drawable.image_file).resize(cellWidth,cellHeighht).crop(true).loadImageFromFile((String) list.get(position), ret);
             return ret;
         }
     }

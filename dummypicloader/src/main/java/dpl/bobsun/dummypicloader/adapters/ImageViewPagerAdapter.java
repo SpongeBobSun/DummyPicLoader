@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 
 import dpl.bobsun.dummypicloader.DummyPicLoader;
+import dpl.bobsun.dummypicloader.fragments.ImageFragment;
 import dpl.bobsun.dummypicloader.utils.DisplayUtil;
 
 
@@ -40,19 +41,5 @@ public class ImageViewPagerAdapter extends FragmentStatePagerAdapter {
         return images.size();
     }
 
-    class ImageFragment extends Fragment {
-        private String image;
-        public ImageFragment(){
-            super();
-        }
-        public void setImage(String filePath){
-            image = filePath;
-        }
-        @Override
-        public View onCreateView(LayoutInflater layoutInflater, ViewGroup parent, Bundle savedInstanceState){
-            View ret = new ImageView(this.getActivity());
-            DummyPicLoader.getInstance(this.getActivity()).resize(DisplayUtil.getStaticInstance(null).getScreenWidth(),DisplayUtil.getStaticInstance(null).getScaledHeight()).loadImageFromFile(image, (ImageView) ret);
-            return ret;
-        }
-    }
+
 }

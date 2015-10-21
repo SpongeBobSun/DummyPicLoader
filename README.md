@@ -1,6 +1,7 @@
 # DummyPicLoader
 ##Lightweight Async Image Loader Library for Android
 Provide async bitmap loading from local filesystem & network.
+![screenshot](./screenshot/shot.gif)
 ###Introduction
 DummyPicLoader provide async image loading & caching.
 
@@ -49,11 +50,4 @@ Resize picture.
 etc, etc
 ####Performance
 Haven't got time for a testing through by through. Current case is displaying 40+ wallpapers, average size 2MB, in a grid view on an emulator (4.4, Davik environment, 512M ram). Generally this test app will take 12M memory and didn't cause an OOM so far.
-##To-do
-~~Provide image ram cache.~~
 
-~~Provide image local disk cache.~~
-
-Documentation.
-
-Test cases.
